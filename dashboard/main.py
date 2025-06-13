@@ -67,7 +67,7 @@ def main():
     </head>
     <body>
         <div class="container">
-            <div class="big-title">CobraSmart</div>
+            <div class="big-title">Bradescard</div>
             <div class="line"></div>
             <div class="small-title">Segmentación de clientes de productos financieros.</div>
         </div>
