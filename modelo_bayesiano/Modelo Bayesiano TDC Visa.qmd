@@ -1,0 +1,76 @@
+---
+title: "Modelo Bayseiano TDC Visa"
+format: html
+---
+
+```{r}
+library(brms)
+library(tidyverse)
+library(mgcv)
+```
+
+```{r}
+TDC_Visa_fit1 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit1_TDC_Visa.rds')
+TDC_Visa_fit2 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit2_TDC_Visa.rds')
+TDC_Visa_fit3 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit3_TDC_Visa.rds')
+TDC_Visa_fit4 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit4_TDC_Visa.rds')
+```
+
+```{r}
+df = read_csv("/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/TDC_Visa_ABC_ss.csv")
+
+# df = read_csv("/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/TDC_Visa_Segmentado_ABC.csv")
+df$Segmento_ABC = as.factor(df$Segmento_ABC)
+
+```
+
+```{r}
+# fit1 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m2 + + dias_deudados_m2,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+# 
+# fit2 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m2 + Variable_Objetivo_m4,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+# 
+# fit3 <- brm(Pago_M1 ~ Segmento_ABC + s(dias_deudados_m2),
+#             data = df, family = gaussian(), chains = 2, iter = 10000)
+
+# fit4 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m1 + + dias_deudados_m2,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+
+# saveRDS(fit1, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit1_TDC_Visa.rds')
+# saveRDS(fit2, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit2_TDC_Visa.rds')
+# saveRDS(fit3, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit3_TDC_Visa.rds')
+# saveRDS(fit4, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit4_TDC_Visa.rds')
+
+
+# para llamar el objeto; readRDS(.../fit1.rds)
+```
+
+```{r}
+summary(TDC_Visa_fit1)
+summary(TDC_Visa_fit2)
+summary(TDC_Visa_fit3)
+summary(TDC_Visa_fit4)
+```
+
+```{r}
+plot(TDC_Visa_fit3)
+plot(conditional_effects(TDC_Visa_fit3, effects = "dias_deudados_m2"))
+plot(conditional_effects(TDC_Visa_fit3, effects = "Segmento_ABC"))
+```
+Discreto con menos variables
+```{r}
+plot(TDC_Visa_fit4)
+plot(conditional_effects(TDC_Visa_fit4, effects = c("dias_deudados_m1:Segmento_ABC", "dias_deudados_m2:Segmento_ABC")))
+plot(conditional_effects(TDC_Visa_fit4, effects = "Segmento_ABC"))
+```
+
+
+```{r}
+predict_clients = df[c(84, 1563, 1180), ] 
+predict_clients
+```
+
+```{r}
+predict(TDC_Visa_fit3, predict_clients)
+```

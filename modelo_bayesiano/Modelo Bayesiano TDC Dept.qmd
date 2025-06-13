@@ -1,0 +1,85 @@
+---
+title: "Modelo Bayseiano TDC Dept"
+format: html
+---
+
+```{r}
+library(brms)
+library(tidyverse)
+library(mgcv)
+```
+
+```{r}
+TDC_Dept_fit1 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit1_TDC_Dept.rds')
+TDC_Dept_fit2 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit2_TDC_Dept.rds')
+TDC_Dept_fit3 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit3_TDC_Dept.rds')
+TDC_Dept_fit4 = readRDS('/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit4_TDC_Dept.rds')
+```
+
+```{r}
+df = read_csv("/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/TDC_Dept_ABC_ss.csv")
+
+# df = read_csv("/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/TDC_Dept_Segmentado_ABC.csv")
+df$Segmento_ABC = as.factor(df$Segmento_ABC)
+
+```
+
+```{r}
+# fit1 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m2,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+# 
+# fit2 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m2 + Variable_Objetivo_m4,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+# 
+# fit3 <- brm(Pago_M1 ~ Segmento_ABC + s(dias_deudados_m2),
+#             data = df, family = gaussian(), chains = 2, iter = 10000)
+
+# fit4 <- brm(Variable_objetivo ~ Segmento_ABC + dias_deudados_m1 + + dias_deudados_m2,
+#             data = df, family = bernoulli(), chains = 2, iter = 10000)
+# 
+# saveRDS(fit1, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit1_TDC_Dept.rds')
+# saveRDS(fit2, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit2_TDC_Dept.rds')
+# saveRDS(fit3, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit3_TDC_Dept.rds')
+# saveRDS(fit4, '/Users/gemelendez/Documents/TEC/SEM 6 TEC/Optimizacion no-lineal/RETO Bradescard/Rdata/fit4_TDC_Dept.rds')
+
+# para llamar el objeto; readRDS(.../fit1.rds)
+```
+
+```{r}
+summary(TDC_Dept_fit4)
+# summary(TDC_Dept_fit2)
+# summary(TDC_Dept_fit3)
+```
+```{r}
+plot(TDC_Dept_fit3)
+plot(conditional_effects(TDC_Dept_fit3, effects = "dias_deudados_m2"))
+plot(conditional_effects(TDC_Dept_fit3, effects = "Segmento_ABC"))
+```
+Plots del modelo discreto completo
+```{r}
+plot(TDC_Dept_fit4)
+p <- plot(conditional_effects(TDC_Dept_fit4, effects = c("dias_deudados_m1:Segmento_ABC", "dias_deudados_m2:Segmento_ABC")))
+
+p[[1]] + 
+  labs(title = "Efectos Condicionales - Días Deudados M1 por Segmento ABC") +
+  theme_minimal() +  # Tema con fondo blanco
+  theme(
+    legend.position = c(0.1, 0.85),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),  # Centrar título
+    panel.background = element_rect(fill = "white", color = "white"),
+    plot.background = element_rect(fill = "white", color = "white")
+  )
+
+p[[2]] + theme(legend.position = c(0.1, 0.85))  # Para el segundo efecto
+
+plot(conditional_effects(TDC_Dept_fit4, effects = "Segmento_ABC"))
+```
+
+```{r}
+predict_clients = df[c(123, 1383, 129), ] 
+predict_clients
+```
+
+```{r}
+predict(TDC_Dept_fit3, predict_clients)
+```
